@@ -1,5 +1,7 @@
-import { sum } from '../utils/sum';
-import { avg } from '../utils/avg';
+import { sum } from './sum';
+import { avg } from './avg';
+import { max } from './max';
+import { min } from './min';
 
 // profile = load profile unitary (0 to 1)
 // peak = target peak
@@ -15,30 +17,30 @@ export function fitCurve(demand: Array<number>, peak: Array<number>, profile: Ar
   if (demand.length > 1 && demand.length <= 12)
     yearlyDemand = ((sum(demand) / demand.length) * 12) as number;
 
-  if (yearlyDemand > profile.length * peak.max()) return 'Impossible';
+  if (yearlyDemand > profile.length * max(peak)) return 'Impossible';
 
   const secondAvg = yearlyDemand / profile.length;
 
   const firstAdjust = profile.map((item) => {
-    return peak.max() * item;
+    return max(peak) * item;
   });
 
   const firstAvg = avg(firstAdjust);
 
   const secondAdjust = firstAdjust.map((item) => {
     const xLine =
-      ((item - firstAvg) * (peak.max() - secondAvg)) / (peak.max() - firstAvg) + secondAvg;
+      ((item - firstAvg) * (max(peak) - secondAvg)) / (max(peak) - firstAvg) + secondAvg;
 
     if (xLine >= 0) return xLine;
 
-    return firstAdjust.min();
+    return min(firstAdjust);
   });
 
   if (sum(secondAdjust) !== yearlyDemand) {
-    const multp = (yearlyDemand - peak.max()) / (sum(secondAdjust) - peak.max());
+    const multp = (yearlyDemand - max(peak)) / (sum(secondAdjust) - max(peak));
 
     const thirdAdjust = secondAdjust.map((item) => {
-      if (item === peak.max()) return peak.max();
+      if (item === max(peak)) return max(peak);
 
       return item * multp;
     });
@@ -47,11 +49,4 @@ export function fitCurve(demand: Array<number>, peak: Array<number>, profile: Ar
   }
 
   return secondAdjust;
-}
-
-declare global {
-  interface Array<T> {
-    max(): number;
-    min(): number;
-  }
 }
