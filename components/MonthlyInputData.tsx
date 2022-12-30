@@ -9,6 +9,9 @@ import { fitCurve } from '../utils/fitCurve';
 import { loadProfiles } from '../assets/loadProfiles';
 import { sum } from '../utils/sum';
 import { avg } from '../utils/avg';
+import { max } from '../utils/max';
+import { isEmpty } from '../utils/isEmpty';
+import { csvFile } from '../utils/csvFile';
 
 type UserMessage = {
   error: string;
@@ -135,6 +138,12 @@ export default function Monthly() {
   ];
 
   async function handleSubmit(information: any) {
+    if (isEmpty(information)) {
+      userMessage.error = `Please, fill all the fields`;
+      setPageState(userMessage);
+      return;
+    }
+
     let demand = [] as number[];
     let peak = [] as number[];
 
@@ -172,7 +181,7 @@ export default function Monthly() {
       return;
     }
 
-    if (information.typical.length === 0) {
+    if (!information.typical) {
       userMessage.error = `You must select a Typical Load Profile`;
       setPageState(userMessage);
       return;
@@ -180,8 +189,8 @@ export default function Monthly() {
 
     const typical = information.typical.split(',');
 
-    if (typical.length * peak.max() <= avg(demand) * 12) {
-      userMessage.error = `PEAK can't be higher than DEMAND`;
+    if (typical.length * max(peak) <= avg(demand) * 12) {
+      userMessage.error = `PEAK can't be lower than the DEMAND's average`;
       information.peak = null;
       setPageState(userMessage);
       return;
@@ -351,7 +360,7 @@ export default function Monthly() {
                 </InfoContainer>
 
                 <RowContainer>
-                  <Button type='submit' text='Create' />
+                  <Button background='#24374e' type='submit' text='Create' />
                 </RowContainer>
               </RowLoadProfile>
             </PageContainer>
@@ -367,17 +376,32 @@ export default function Monthly() {
                 legendToggle
               />
               <RowContainer>
-                <Label>Total Demand: {Number(sum(profile))?.toLocaleString('en-US')}kW</Label>
-                <Label>Peak: {Number(profile.max())?.toLocaleString('en-US')}kW</Label>
+                <Label>
+                  Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW
+                </Label>
+                <Label>Peak: {Number(max(profile).toFixed(0))?.toLocaleString('en-US')}kW</Label>
               </RowContainer>
-              <Button
-                type='button'
-                text='Go Back'
-                onClick={() => {
-                  setChart(false);
-                  setUserFields({});
-                }}
-              />
+
+              <RowContainer>
+                <Button
+                  variant='outlined'
+                  type='button'
+                  text='Go Back'
+                  onClick={() => {
+                    setChart(false);
+                    setUserFields({});
+                  }}
+                />
+                <Button
+                  background='#24374e'
+                  color='white'
+                  type='button'
+                  text='Download CSV File'
+                  onClick={() => {
+                    csvFile(profile);
+                  }}
+                />
+              </RowContainer>
             </ChartArea>
           )}
         </Container>

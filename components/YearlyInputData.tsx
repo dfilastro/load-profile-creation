@@ -9,6 +9,8 @@ import { errors } from '../utils/error';
 import { isEmpty } from '../utils/isEmpty';
 import { fitCurve } from '../utils/fitCurve';
 import { loadProfiles } from '../assets/loadProfiles';
+import { csvFile } from '../utils/csvFile';
+import { max } from '../utils/max';
 
 type UserMessage = {
   error: string;
@@ -89,19 +91,19 @@ export default function Yearly() {
       return;
     }
 
-    if (information.demand === null || information.demand === '') {
+    if (!information.demand || information.demand <= 0) {
       userMessage.error = `Please, inform a valid value for DEMAND`;
       setPageState(userMessage);
       return;
     }
 
-    if (information.peak === null || information.peak === '') {
+    if (!information.peak || information.peak <= 0) {
       userMessage.error = `Please, inform a valid value for PEAK`;
       setPageState(userMessage);
       return;
     }
 
-    if (information.typical.length === 0) {
+    if (!information.typical) {
       userMessage.error = `You must select a Typical Load Profile`;
       setPageState(userMessage);
       return;
@@ -110,7 +112,7 @@ export default function Yearly() {
     const typical = information.typical.split(',');
 
     if (Number(typical.length * information.peak) <= Number(information.demand)) {
-      userMessage.error = `PEAK can't be higher than DEMAND`;
+      userMessage.error = `PEAK can't be lower than the DEMAND's average`;
       information.peak = null;
       setPageState(userMessage);
       return;
@@ -202,7 +204,7 @@ export default function Yearly() {
                 </Select>
               </RowContainer>
               <RowContainer>
-                <Button type='submit' text='Create' />
+                <Button background='#24374e' type='submit' text='Create' />
               </RowContainer>
             </Container>
           )}
@@ -220,16 +222,28 @@ export default function Yearly() {
                 <Label>
                   Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW
                 </Label>
-                <Label>Peak: {Number(profile.max().toFixed(0))?.toLocaleString('en-US')}kW</Label>
+                <Label>Peak: {Number(max(profile).toFixed(0))?.toLocaleString('en-US')}kW</Label>
               </RowContainer>
-              <Button
-                type='button'
-                text='Go Back'
-                onClick={() => {
-                  setChart(false);
-                  setUserFields({});
-                }}
-              />
+              <RowContainer>
+                <Button
+                  variant='outlined'
+                  type='button'
+                  text='Go Back'
+                  onClick={() => {
+                    setChart(false);
+                    setUserFields({});
+                  }}
+                />
+                <Button
+                  background='#24374e'
+                  color='white'
+                  type='button'
+                  text='Download CSV File'
+                  onClick={() => {
+                    csvFile(profile);
+                  }}
+                />
+              </RowContainer>
             </ChartArea>
           )}
         </div>
