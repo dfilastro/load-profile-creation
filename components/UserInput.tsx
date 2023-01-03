@@ -1,7 +1,8 @@
 import styled from '@emotion/styled';
 import { useState } from 'react';
-import Monthly from './MonthlyInputData';
 import Yearly from './YearlyInputData';
+import Monthly from './MonthlyInputData';
+import RoofSqft from './RoofSqftInputData';
 
 const Container = styled.div`
   height: 100vh;
@@ -51,7 +52,7 @@ export default function UserInput() {
             value='monthly'
             onChange={() => setSelect('monthly')}
           />
-          <InputLabel htmlFor='monthy'>Monthly</InputLabel>
+          <InputLabel htmlFor='monthy'>Monthly Demand/Peak</InputLabel>
         </InputContainer>
         <InputContainer>
           <Input
@@ -61,12 +62,23 @@ export default function UserInput() {
             value='yearly'
             onChange={() => setSelect('yearly')}
           />
-          <InputLabel htmlFor='yearly'>Yearly</InputLabel>
+          <InputLabel htmlFor='yearly'>Yearly Demand/Peak</InputLabel>
+        </InputContainer>
+        <InputContainer>
+          <Input
+            type='radio'
+            name='type'
+            id='roofsqft'
+            value='roofsqft'
+            onChange={() => setSelect('roofsqft')}
+          />
+          <InputLabel htmlFor='roofsqft'>Roof Square Footage</InputLabel>
         </InputContainer>
       </SelectionContaier>
       <ContentContainer>
         {select === 'monthly' && <Monthly />}
         {select === 'yearly' && <Yearly />}
+        {select === 'roofsqft' && <RoofSqft />}
       </ContentContainer>
 
       <form action='submit'></form>

@@ -196,7 +196,7 @@ export default function Monthly() {
       return;
     }
 
-    const loadProfile = fitCurve(demand, peak, typical);
+    const loadProfile = fitCurve(typical, demand, peak);
 
     setIsLoading(true);
     setChart(true);

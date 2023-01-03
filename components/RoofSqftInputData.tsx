@@ -1,16 +1,18 @@
 import Chart from 'react-google-charts';
 import styled from '@emotion/styled';
 import { useState } from 'react';
-import { InputAdornment, TextField, CircularProgress, Alert } from '@mui/material';
+import { TextField, CircularProgress, Alert } from '@mui/material';
 
 import Button from './Button';
 import { sum } from '../utils/sum';
+import { max } from '../utils/max';
 import { errors } from '../utils/error';
 import { isEmpty } from '../utils/isEmpty';
-import { fitCurve } from '../utils/fitCurve';
-import { loadProfiles } from '../assets/loadProfiles';
 import { csvFile } from '../utils/csvFile';
-import { max } from '../utils/max';
+import { fitCurve } from '../utils/fitCurve';
+
+import { industry } from '../assets/industry';
+import { loadProfiles } from '../assets/loadProfiles';
 
 type UserMessage = {
   error: string;
@@ -24,6 +26,29 @@ type LoadProfiles = {
   Test_Load_Profile: number[];
   LP_Generic_Commercial: number[];
   LP_Generic_Warehouse: number[];
+};
+
+type Industry = {
+  food: number;
+  beverageAndTobaccoProducts: number;
+  textileMills: number;
+  textileProductMills: number;
+  apparel: number;
+  leatherAndAlliedProducts: number;
+  woodProducts: number;
+  paper: number;
+  printingAndRelatedSupport: number;
+  petroleumAndCoalProducts: number;
+  chemicals: number;
+  plasticsAndRubberProducts: number;
+  nonmetallicMineralProducts: number;
+  primaryMetals: number;
+  fabricatedMetalProducts: number;
+  machinery: number;
+  computerAndElectronicProducts: number;
+  electricalEquipAppliancesAndComponents: number;
+  transportationEquipment: number;
+  furnitureAndRelatedProducts: number;
 };
 
 const Container = styled.form`
@@ -75,7 +100,7 @@ const ChartArea = styled.div`
   gap: 4rem;
 `;
 
-export default function Yearly() {
+export default function RoofSqft() {
   const [userFields, setUserFields] = useState<any>({});
   const [profile, setProfile] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -91,14 +116,14 @@ export default function Yearly() {
       return;
     }
 
-    if (!information.demand || information.demand <= 0) {
-      userMessage.error = `Please, inform a valid value for DEMAND`;
+    if (!information.roofsqft || information.roofsqft <= 0) {
+      userMessage.error = `Please, inform a valid value for ROOF SQFT`;
       setPageState(userMessage);
       return;
     }
 
-    if (!information.peak || information.peak <= 0) {
-      userMessage.error = `Please, inform a valid value for PEAK`;
+    if (!information.industry || information.industry <= 0) {
+      userMessage.error = `You must select an Industry Type`;
       setPageState(userMessage);
       return;
     }
@@ -111,7 +136,6 @@ export default function Yearly() {
 
     const typical = information.typical.split(',');
 
-    console.log(typical);
     if (Number(typical.length * information.peak) <= Number(information.demand)) {
       userMessage.error = `PEAK can't be lower than the DEMAND's average`;
       information.peak = null;
@@ -119,10 +143,12 @@ export default function Yearly() {
       return;
     }
 
-    const demand = information.demand.split(' ');
-    const peak = [Number(information.peak)];
+    const demand = undefined;
+    const peak = undefined;
+    const industryType = information.industry;
+    const sqft = information.roofsqft;
 
-    const loadProfile = fitCurve(typical, demand, peak);
+    const loadProfile = fitCurve(typical, demand, peak, industryType, sqft);
 
     setIsLoading(true);
     setChart(true);
@@ -166,30 +192,27 @@ export default function Yearly() {
               {pageState.success !== '' && <Alert severity='success'>{pageState.success}</Alert>}
               {pageState.info !== '' && <Alert severity='info'>{pageState.info}</Alert>}
               <RowContainer>
-                <Label>Demand:</Label>
+                <Label>Approximate Available Floorspace:</Label>
                 <TextField
-                  label='Yearly Demand'
+                  label='Available Square Footage'
                   type='number'
                   onChange={handleFieldChange}
-                  id='demand'
+                  id='roofsqft'
                   sx={{ width: '15rem' }}
-                  InputProps={{
-                    endAdornment: <InputAdornment position='end'>kW</InputAdornment>,
-                  }}
                 />
               </RowContainer>
+
               <RowContainer>
-                <Label>Peak:</Label>
-                <TextField
-                  label='Yearly Peak'
-                  type='number'
-                  onChange={handleFieldChange}
-                  id='peak'
-                  sx={{ width: '15rem' }}
-                  InputProps={{
-                    endAdornment: <InputAdornment position='end'>kW</InputAdornment>,
-                  }}
-                />
+                <Label>Industry Type:</Label>
+                <Select name='select' onChange={handleFieldChange} id='industry'>
+                  {Object.keys(industry).map((i, index) => {
+                    return (
+                      <option key={index} value={`${industry[i as keyof Industry]}`}>
+                        {i}
+                      </option>
+                    );
+                  })}
+                </Select>
               </RowContainer>
               <RowContainer>
                 <Label>Typical Load Profile:</Label>

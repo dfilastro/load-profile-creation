@@ -1,5 +1,8 @@
 export function sum(x: number[]) {
-  const sum = x.reduce((partialSum, i) => partialSum + i, 0);
+  const number = x.map((i) => {
+    return Number(i);
+  });
+  const sum = number.reduce((partialSum, i) => partialSum + i, 0);
 
   return sum;
 }

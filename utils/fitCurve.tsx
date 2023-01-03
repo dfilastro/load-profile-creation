@@ -7,46 +7,67 @@ import { min } from './min';
 // peak = target peak
 // demand = target demand
 
-export function fitCurve(demand: Array<number>, peak: Array<number>, profile: Array<number>) {
+export function fitCurve(
+  profile: Array<number>,
+  demand?: Array<number>,
+  peak?: Array<number>,
+  industry?: number,
+  roofSqft?: number
+) {
   let yearlyDemand = 0;
+  let yearlyPeak = 0;
 
-  // if the user passes just the yearly demand and peak
-  if (demand.length === 1) yearlyDemand = demand[0] as number;
+  // if the user passes just the roof square footage
+  if (industry && roofSqft) {
+    yearlyDemand = roofSqft * industry;
+    yearlyPeak = yearlyDemand / sum(profile);
 
-  // if the user passes a monthly demand and peak
-  if (demand.length > 1 && demand.length <= 12)
-    yearlyDemand = ((sum(demand) / demand.length) * 12) as number;
-
-  if (yearlyDemand > profile.length * max(peak)) return 'Impossible';
-
-  const secondAvg = yearlyDemand / profile.length;
-
-  const firstAdjust = profile.map((item) => {
-    return max(peak) * item;
-  });
-
-  const firstAvg = avg(firstAdjust);
-
-  const secondAdjust = firstAdjust.map((item) => {
-    const xLine =
-      ((item - firstAvg) * (max(peak) - secondAvg)) / (max(peak) - firstAvg) + secondAvg;
-
-    if (xLine >= 0) return xLine;
-
-    return min(firstAdjust);
-  });
-
-  if (sum(secondAdjust) !== yearlyDemand) {
-    const multp = (yearlyDemand - max(peak)) / (sum(secondAdjust) - max(peak));
-
-    const thirdAdjust = secondAdjust.map((item) => {
-      if (item === max(peak)) return max(peak);
-
-      return item * multp;
+    const sqftLoadProfile = profile.map((item) => {
+      return Number(yearlyPeak) * Number(item);
     });
 
-    return thirdAdjust;
+    return sqftLoadProfile;
   }
 
-  return secondAdjust;
+  if (demand && peak) {
+    // if the user passes just the yearly demand and peak
+    if (demand.length === 1) yearlyDemand = demand[0] as number;
+
+    // if the user passes a monthly demand and peak
+    if (demand.length > 1 && demand.length <= 12)
+      yearlyDemand = ((sum(demand) / demand.length) * 12) as number;
+
+    if (yearlyDemand > profile.length * max(peak)) return 'Impossible';
+
+    const secondAvg = yearlyDemand / profile.length;
+
+    const firstAdjust = profile.map((item) => {
+      return max(peak) * item;
+    });
+
+    const firstAvg = avg(firstAdjust);
+
+    const secondAdjust = firstAdjust.map((item) => {
+      const xLine =
+        ((item - firstAvg) * (max(peak) - secondAvg)) / (max(peak) - firstAvg) + secondAvg;
+
+      if (xLine >= 0) return xLine;
+
+      return min(firstAdjust);
+    });
+
+    if (sum(secondAdjust) !== yearlyDemand) {
+      const multp = (yearlyDemand - max(peak)) / (sum(secondAdjust) - max(peak));
+
+      const thirdAdjust = secondAdjust.map((item) => {
+        if (item === max(peak)) return max(peak);
+
+        return item * multp;
+      });
+
+      return thirdAdjust;
+    }
+
+    return secondAdjust;
+  }
 }
