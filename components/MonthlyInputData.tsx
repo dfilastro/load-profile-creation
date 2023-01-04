@@ -1,4 +1,3 @@
-import Chart from 'react-google-charts';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { InputAdornment, TextField, CircularProgress, Alert } from '@mui/material';
@@ -12,6 +11,7 @@ import { avg } from '../utils/avg';
 import { max } from '../utils/max';
 import { isEmpty } from '../utils/isEmpty';
 import { csvFile } from '../utils/csvFile';
+import HeatMap from './HeatMap';
 
 type UserMessage = {
   error: string;
@@ -21,8 +21,8 @@ type UserMessage = {
 };
 
 type LoadProfiles = {
-  Model_Load_Profile: number[];
-  Test_Load_Profile: number[];
+  // Model_Load_Profile: number[];
+  // Test_Load_Profile: number[];
   LP_Generic_Commercial: number[];
   LP_Generic_Warehouse: number[];
 };
@@ -242,7 +242,7 @@ export default function Monthly() {
               <RowPeakDemand>
                 <InfoContainer>
                   <RowContainer>
-                    <Tittle>Demand</Tittle>
+                    <Tittle>Consumption</Tittle>
                   </RowContainer>
                   <RowContainer>
                     <InfoContainer>
@@ -252,13 +252,13 @@ export default function Monthly() {
                             <RowContainer key={index}>
                               <Label>{i}</Label>
                               <TextField
-                                label='Demand'
+                                label='Consumption'
                                 type='number'
                                 onChange={handleFieldChange}
                                 id={`demand-${index}`}
                                 sx={{ width: '15rem' }}
                                 InputProps={{
-                                  endAdornment: <InputAdornment position='end'>kW</InputAdornment>,
+                                  endAdornment: <InputAdornment position='end'>kWh</InputAdornment>,
                                 }}
                               />
                             </RowContainer>
@@ -273,13 +273,13 @@ export default function Monthly() {
                             <RowContainer key={index}>
                               <Label>{i}</Label>
                               <TextField
-                                label='Demand'
+                                label='Consumption'
                                 type='number'
                                 onChange={handleFieldChange}
                                 id={`demand-${index}`}
                                 sx={{ width: '15rem' }}
                                 InputProps={{
-                                  endAdornment: <InputAdornment position='end'>kW</InputAdornment>,
+                                  endAdornment: <InputAdornment position='end'>kWh</InputAdornment>,
                                 }}
                               />
                             </RowContainer>
@@ -368,13 +368,7 @@ export default function Monthly() {
           {chart && (
             <ChartArea>
               <Label>Corrected Load Profile</Label>
-              <Chart
-                chartType='Line'
-                data={[['', ''], ...Object.entries({ ...profile })]}
-                height='400px'
-                width='100%'
-                legendToggle
-              />
+              <HeatMap data={[...profile]} unit={'kW'} />
               <RowContainer>
                 <Label>
                   Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW

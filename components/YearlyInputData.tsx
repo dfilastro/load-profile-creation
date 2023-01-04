@@ -1,16 +1,17 @@
-import Chart from 'react-google-charts';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { InputAdornment, TextField, CircularProgress, Alert } from '@mui/material';
 
 import Button from './Button';
+import { max } from '../utils/max';
 import { sum } from '../utils/sum';
 import { errors } from '../utils/error';
+import { csvFile } from '../utils/csvFile';
 import { isEmpty } from '../utils/isEmpty';
 import { fitCurve } from '../utils/fitCurve';
 import { loadProfiles } from '../assets/loadProfiles';
-import { csvFile } from '../utils/csvFile';
-import { max } from '../utils/max';
+
+import HeatMap from './HeatMap';
 
 type UserMessage = {
   error: string;
@@ -20,8 +21,6 @@ type UserMessage = {
 };
 
 type LoadProfiles = {
-  Model_Load_Profile: number[];
-  Test_Load_Profile: number[];
   LP_Generic_Commercial: number[];
   LP_Generic_Warehouse: number[];
 };
@@ -111,7 +110,6 @@ export default function Yearly() {
 
     const typical = information.typical.split(',');
 
-    console.log(typical);
     if (Number(typical.length * information.peak) <= Number(information.demand)) {
       userMessage.error = `PEAK can't be lower than the DEMAND's average`;
       information.peak = null;
@@ -166,7 +164,7 @@ export default function Yearly() {
               {pageState.success !== '' && <Alert severity='success'>{pageState.success}</Alert>}
               {pageState.info !== '' && <Alert severity='info'>{pageState.info}</Alert>}
               <RowContainer>
-                <Label>Demand:</Label>
+                <Label>Consumption:</Label>
                 <TextField
                   label='Yearly Demand'
                   type='number'
@@ -174,7 +172,7 @@ export default function Yearly() {
                   id='demand'
                   sx={{ width: '15rem' }}
                   InputProps={{
-                    endAdornment: <InputAdornment position='end'>kW</InputAdornment>,
+                    endAdornment: <InputAdornment position='end'>kWh</InputAdornment>,
                   }}
                 />
               </RowContainer>
@@ -212,13 +210,7 @@ export default function Yearly() {
           {chart && (
             <ChartArea>
               <Label>Corrected Load Profile</Label>
-              <Chart
-                chartType='Line'
-                data={[['', ''], ...Object.entries({ ...profile })]}
-                height='400px'
-                width='100%'
-                legendToggle
-              />
+              <HeatMap data={[...profile]} unit={'kW'} />
               <RowContainer>
                 <Label>
                   Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW

@@ -1,4 +1,3 @@
-import Chart from 'react-google-charts';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { TextField, CircularProgress, Alert } from '@mui/material';
@@ -13,6 +12,7 @@ import { fitCurve } from '../utils/fitCurve';
 
 import { industry } from '../assets/industry';
 import { loadProfiles } from '../assets/loadProfiles';
+import HeatMap from './HeatMap';
 
 type UserMessage = {
   error: string;
@@ -22,8 +22,6 @@ type UserMessage = {
 };
 
 type LoadProfiles = {
-  Model_Load_Profile: number[];
-  Test_Load_Profile: number[];
   LP_Generic_Commercial: number[];
   LP_Generic_Warehouse: number[];
 };
@@ -235,13 +233,7 @@ export default function RoofSqft() {
           {chart && (
             <ChartArea>
               <Label>Corrected Load Profile</Label>
-              <Chart
-                chartType='Line'
-                data={[['', ''], ...Object.entries({ ...profile })]}
-                height='400px'
-                width='100%'
-                legendToggle
-              />
+              <HeatMap data={[...profile]} unit={'kW'} />
               <RowContainer>
                 <Label>
                   Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW
