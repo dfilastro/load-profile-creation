@@ -166,7 +166,7 @@ export default function Yearly() {
               <RowContainer>
                 <Label>Consumption:</Label>
                 <TextField
-                  label='Yearly Demand'
+                  label='Yearly Consumption'
                   type='number'
                   onChange={handleFieldChange}
                   id='demand'
