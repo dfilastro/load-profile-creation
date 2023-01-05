@@ -41,7 +41,6 @@ const RowContainer = styled.div`
 `;
 
 const Label = styled.div`
-  width: 15rem;
   height: 2rem;
   display: flex;
   align-items: center;
@@ -213,7 +212,7 @@ export default function Yearly() {
               <HeatMap data={[...profile]} unit={'kW'} />
               <RowContainer>
                 <Label>
-                  Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW
+                  Total Consumption: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kWh
                 </Label>
                 <Label>Peak: {Number(max(profile).toFixed(0))?.toLocaleString('en-US')}kW</Label>
               </RowContainer>

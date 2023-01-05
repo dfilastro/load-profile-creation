@@ -52,7 +52,7 @@ export default function UserInput() {
             value='monthly'
             onChange={() => setSelect('monthly')}
           />
-          <InputLabel htmlFor='monthy'>Monthly Demand/Peak</InputLabel>
+          <InputLabel htmlFor='monthy'>Monthly Consumption/Peak</InputLabel>
         </InputContainer>
         <InputContainer>
           <Input
@@ -62,7 +62,7 @@ export default function UserInput() {
             value='yearly'
             onChange={() => setSelect('yearly')}
           />
-          <InputLabel htmlFor='yearly'>Yearly Demand/Peak</InputLabel>
+          <InputLabel htmlFor='yearly'>Yearly Consumption/Peak</InputLabel>
         </InputContainer>
         <InputContainer>
           <Input

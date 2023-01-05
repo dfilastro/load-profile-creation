@@ -21,8 +21,6 @@ type UserMessage = {
 };
 
 type LoadProfiles = {
-  // Model_Load_Profile: number[];
-  // Test_Load_Profile: number[];
   LP_Generic_Commercial: number[];
   LP_Generic_Warehouse: number[];
 };
@@ -160,7 +158,7 @@ export default function Monthly() {
       demand.push(Number(Object.values(demandArray[i])[0]) as number);
     }
 
-    // Save monthly demand information into an array
+    // Save monthly peak information into an array
     const peakArray = arrayOfObjectsWithInformation.filter((i) =>
       Object.keys(i)[0].includes('peak')
     );
@@ -170,7 +168,7 @@ export default function Monthly() {
     }
 
     if (demand.length < 2) {
-      userMessage.error = `You must, at least, inform two values for DEMAND, or try YEARLY modulation`;
+      userMessage.error = `You must, at least, inform two values for CONSUMPTION, or try YEARLY modulation`;
       setPageState(userMessage);
       return;
     }
@@ -190,7 +188,7 @@ export default function Monthly() {
     const typical = information.typical.split(',');
 
     if (typical.length * max(peak) <= avg(demand) * 12) {
-      userMessage.error = `PEAK can't be lower than the DEMAND's average`;
+      userMessage.error = `PEAK can't be lower than the CONSUMPTION's average`;
       information.peak = null;
       setPageState(userMessage);
       return;
@@ -371,7 +369,7 @@ export default function Monthly() {
               <HeatMap data={[...profile]} unit={'kW'} />
               <RowContainer>
                 <Label>
-                  Total Demand: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kW
+                  Total Consumption: {Number(sum(profile).toFixed(0))?.toLocaleString('en-US')}kWh
                 </Label>
                 <Label>Peak: {Number(max(profile).toFixed(0))?.toLocaleString('en-US')}kW</Label>
               </RowContainer>
