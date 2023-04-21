@@ -12,6 +12,7 @@ import { max } from '../utils/max';
 import { isEmpty } from '../utils/isEmpty';
 import { csvFile } from '../utils/csvFile';
 import HeatMap from './HeatMap';
+import { synthesize_profile } from '../utils/fitMonthlyCurve';
 
 type UserMessage = {
   error: string;
@@ -194,7 +195,8 @@ export default function Monthly() {
       return;
     }
 
-    const loadProfile = fitCurve(typical, demand, peak);
+    // const loadProfile = fitCurve(typical, demand, peak);
+    const loadProfile = synthesize_profile(typical, demand, peak);
 
     setIsLoading(true);
     setChart(true);

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Yearly from './YearlyInputData';
 import Monthly from './MonthlyInputData';
 import RoofSqft from './RoofSqftInputData';
+import Modulation from './Modulation';
 
 const Container = styled.div`
   height: 100vh;
@@ -74,11 +75,22 @@ export default function UserInput() {
           />
           <InputLabel htmlFor='roofsqft'>Roof Square Footage</InputLabel>
         </InputContainer>
+        <InputContainer>
+          <Input
+            type='radio'
+            name='type'
+            id='modulation'
+            value='modulation'
+            onChange={() => setSelect('modulation')}
+          />
+          <InputLabel htmlFor='modulation'>Modulation</InputLabel>
+        </InputContainer>
       </SelectionContaier>
       <ContentContainer>
         {select === 'monthly' && <Monthly />}
         {select === 'yearly' && <Yearly />}
         {select === 'roofsqft' && <RoofSqft />}
+        {select === 'modulation' && <Modulation />}
       </ContentContainer>
 
       <form action='submit'></form>
